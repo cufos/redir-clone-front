@@ -51,6 +51,7 @@ export const PostCard: React.FC<PostCardProps> = ({
         voteScore={voteScore}
         userVote={userVote}
         updateVote={vote}
+        bg="bg-gray-200 "
       />
       {/* Post data section */}
       <div className="w-full p-2">

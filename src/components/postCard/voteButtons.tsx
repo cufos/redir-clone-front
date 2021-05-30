@@ -1,8 +1,14 @@
 import classNames from "classnames";
+type Props = {
+  bg: string;
+  updateVote: (value: number, comment?) => Promise<void>;
+  userVote: number;
+  voteScore: number;
+};
 
-export function VoteButtons({ updateVote, userVote, voteScore }) {
+export function VoteButtons({ updateVote, userVote, voteScore, bg }: Props) {
   return (
-    <div className="w-10 txt-center bg-gray-200 rounded-l py-3">
+    <div className={`w-10 text-center ${bg} rounded-l py-2 flex-shrink-0`}>
       {/* UpVote */}
       <div
         className="w-6 mx-auto text-gray-400 rounded cursor-pointer hover:bg-gray-300 hover:text-red-500"

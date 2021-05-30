@@ -51,7 +51,7 @@ export default function Login() {
           <small>
             New to Readit?
             <Link href="/register">
-              <a className="mb-1 text-blue-500 uppercase">Sngn up</a>
+              <a className="mb-1 text-blue-500 uppercase">Sign up</a>
             </Link>
           </small>
         </div>

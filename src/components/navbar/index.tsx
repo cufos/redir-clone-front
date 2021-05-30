@@ -29,7 +29,7 @@ const NavBar: React.FC = () => {
           </a>
         </Link>
         <span className="text-2xl font-semibold">
-          <Link href="/">readiy</Link>
+          <Link href="/">readit</Link>
         </span>
       </div>
       {/* Seachr input */}
