@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import useSWR from "swr";
+import { useEffect, useState } from "react";
+import useSWR, { useSWRInfinite } from "swr";
 // components
 import { PostCard } from "../components/postCard";
 import { useAuthState } from "../context/auth";
@@ -11,19 +12,71 @@ import { Sub, Post } from "../types";
 // import { GetServerSideProps } from "next";
 
 export default function Home() {
-  const { data: posts } = useSWR<Post[]>("/post");
+  const [observedPosts, setObservedPosts] = useState("");
+  // const { data: posts } = useSWR<Post[]>("/post");
   const { data: topSubs } = useSWR<Sub[]>("/misc/top-subs");
 
   const { authenticated } = useAuthState();
+
+  const {
+    data,
+    error,
+    mutate,
+    size: page,
+    setSize: setPage,
+    isValidating,
+    revalidate,
+  } = useSWRInfinite<Post[]>((index) => `/posts?page=${index}`);
+
+  const posts = data ? [].concat(...data) : [];
+
+  useEffect(
+    function () {
+      if (!posts || posts.length === 0) return;
+
+      const id = posts[posts.length - 1].identifier;
+
+      if (id !== observedPosts) {
+        setObservedPosts(id);
+        observeElement(document.getElementById(id));
+      }
+    },
+    [posts]
+  );
+
+  const observeElement = (element: HTMLElement) => {
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting === true) {
+          setPage(page + 1);
+          observer.unobserve(element);
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(element);
+  };
 
   return (
     <>
       <div className="container pt-4 flex">
         {/* Posts feed */}
         <div className="w-full md:w-160 px-4 md:p-0">
+          {isValidating && <p className="text-lg text-center">Loading...</p>}
           {posts?.map((post) => (
-            <PostCard key={post.identifier} post={post} />
+            <PostCard
+              key={post.identifier}
+              post={post}
+              revalidate={revalidate}
+            />
           ))}
+
+          {isValidating && posts.length && (
+            <p className="text-lg text-center">Loading More...</p>
+          )}
         </div>
         {/* Sidebar */}
         <div className="hidden md:block ml-6 w-80">
