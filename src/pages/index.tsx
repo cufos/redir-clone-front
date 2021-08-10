@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import useSWR, { useSWRInfinite } from "swr";
 // components
 import { PostCard } from "../components/postCard";
+import Seo from "../components/seo";
 import { useAuthState } from "../context/auth";
 
 // types
@@ -21,7 +22,6 @@ export default function Home() {
   const {
     data,
     error,
-    mutate,
     size: page,
     setSize: setPage,
     isValidating,
@@ -29,6 +29,7 @@ export default function Home() {
   } = useSWRInfinite<Post[]>((index) => `/posts?page=${index}`);
 
   const posts = data ? [].concat(...data) : [];
+  const isInitialLoading = !data && !error;
 
   useEffect(
     function () {
@@ -62,10 +63,13 @@ export default function Home() {
 
   return (
     <>
+      <Seo />
       <div className="container pt-4 flex">
         {/* Posts feed */}
         <div className="w-full md:w-160 px-4 md:p-0">
-          {isValidating && <p className="text-lg text-center">Loading...</p>}
+          {isInitialLoading && (
+            <p className="text-lg text-center">Loading...</p>
+          )}
           {posts?.map((post) => (
             <PostCard
               key={post.identifier}
